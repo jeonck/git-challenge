@@ -1,47 +1,41 @@
-## TBD(Trunk Based Development) 전략
+**TBD(Trunk-Based Development) git 전략**은 모든 개발자가 **하나의 메인 브랜치(main, trunk)**를 중심으로 개발하는 방식입니다. 이 전략의 핵심은 **작고 빈번한 커밋**과 **빠른 머지**, 그리고 **장수(longevity)가 짧은 브랜치** 사용에 있습니다[1][2][3][4][5][7][8][9].
 
-**TBD의 개념**
+### 주요 특징
 
-TBD, 즉 Trunk Based Development는 소프트웨어 개발에서 모든 개발자가 단일 브랜치인 'trunk' 또는 'main'에 자주, 소규모로 커밋하는 전략입니다. 이 방식은 코드의 배포 가능 상태를 항상 유지하며, 개발자들이 각자의 작업을 신속하게 통합할 수 있도록 돕습니다[2][7][19].
+- **단일 메인 브랜치:** trunk(main) 브랜치 하나만 상시 운영하며, 항상 배포 가능한 상태로 유지합니다[2][3][4][5][7][8][9].
+- **짧은 생명주기의 브랜치:** 필요할 때만 feature 브랜치를 생성하고, 작업이 끝나면 빠르게 trunk로 병합합니다. 오래 유지되는 브랜치는 지양합니다[1][4][5][9].
+- **작은 단위의 작업:** 작업을 최대한 작은 단위로 쪼개어 자주 커밋하고, 빠르게 병합합니다[1][3][4][5][7].
+- **빠른 코드 리뷰 및 머지:** 코드 리뷰와 병합이 지체되면 전략의 효과가 떨어지므로, 리뷰와 머지를 신속히 진행해야 합니다[5].
+- **자동화된 테스트와 CI/CD:** trunk에 병합 전 자동화 테스트를 필수로 하며, CI/CD 파이프라인을 통해 trunk가 항상 배포 가능한 상태임을 보장합니다[5][6].
+- **Branch by abstraction, Feature flags:** 장수 브랜치를 피하기 위해 추상화 레이어 도입이나 기능 플래그(Feature flag)를 적극 활용합니다[6].
 
-**TBD의 장점**
+### 실무 적용 방법
 
-1. **빠른 피드백**: 작은 변경 사항을 자주 커밋함으로써, 코드 변경에 대한 피드백을 빠르게 받을 수 있습니다. 이는 코드 리뷰와 테스트를 용이하게 만들어, 전체적인 코드 품질을 향상시킵니다[4][14].
+- **브랜치 명명:** release, feature, hotfix 등의 prefix를 강제하지 않으며, 필요에 따라 단명 브랜치를 생성합니다[6].
+- **병합 방식:** 
+  - `merge --squash` 방식으로 커밋 히스토리를 단순화하거나,
+  - `rebase + merge --no-ff` 방식으로 히스토리 유지가 가능합니다[6].
+- **릴리즈 관리:** trunk에서 release 브랜치를 잠깐 생성해 배포 준비를 하며, 필요시 cherry-pick으로 trunk의 커밋을 반영합니다. release 브랜치에서 trunk로 다시 병합하지 않습니다[6].
+- **문제 발생 시:** trunk의 상태가 깨질 경우, 최우선으로 복구합니다[5][6].
 
-2. **충돌 최소화**: 여러 개발자가 동시에 작업할 때 발생할 수 있는 충돌을 줄입니다. 각 개발자는 trunk에 직접 커밋하기 전에 코드 리뷰와 테스트를 통해 문제를 사전에 해결할 수 있습니다[5][11].
+### 장점
 
-3. **지속적 통합**: TBD는 지속적 통합(CI)과 잘 결합되어, 코드 변경 사항이 즉시 통합되고 테스트됩니다. 이는 배포 주기를 단축시키고, 배포 과정에서의 리스크를 줄입니다[3][19].
+- **대규모 병합의 위험 감소:** 장기 브랜치가 없으므로 대규모 충돌이나 병합 이슈가 줄어듭니다[5].
+- **최신 상태 유지:** trunk가 항상 최신 상태를 반영하므로, 개발자 모두가 최신 코드를 기반으로 작업할 수 있습니다[5][7].
+- **배포 자동화/효율화:** CI/CD와 결합 시, 배포 빈도가 높고 안정적입니다[5][6].
 
-4. **단순한 브랜치 관리**: 복잡한 브랜치 구조를 피하고, 모든 개발자가 동일한 코드베이스에서 작업하도록 강제함으로써, 코드의 일관성을 유지할 수 있습니다[6][10].
+### 주의사항 및 한계
 
-**TBD의 실행 방법**
+- **자동화 인프라 필수:** 자동화 테스트와 CI/CD가 미흡하다면 trunk의 품질 보장이 어렵습니다[5][6].
+- **팀 규모와 프로젝트 성격:** 대규모 팀이나, 여러 버전 지원이 필요한 경우에는 다른 브랜치 전략이 더 적합할 수 있습니다[6].
 
-- **작업 단위 쪼개기**: 개발자는 큰 기능을 작은 단위로 나누어 작업하고, 이를 trunk에 빠르게 반영해야 합니다. 이렇게 하면 각 커밋이 작고 관리하기 쉬워집니다[5][8].
-
-- **자동화된 테스트**: 모든 커밋은 자동화된 테스트를 통과해야 하며, 이를 통해 trunk의 안정성을 보장합니다[11][15].
-
-- **코드 리뷰와 실시간 커뮤니케이션**: 팀원 간의 실시간 코드 리뷰와 커뮤니케이션을 통해 코드 품질을 높이고, 문제를 조기에 발견할 수 있습니다[4][19].
-
-**결론**
-
-TBD는 특히 소규모 팀이나 빠른 배포가 필요한 프로젝트에서 유용한 전략입니다. 이 방식은 코드의 일관성을 유지하고, 개발자 간의 협업을 촉진하며, 배포 주기를 단축시키는 데 큰 도움이 됩니다. 따라서, 기존의 복잡한 브랜치 전략에서 벗어나 TBD를 도입하는 것은 많은 팀에게 긍정적인 변화를 가져올 수 있습니다[2][3][19].
-[1] https://aliencoder.tistory.com/79
-[2] https://velog.io/@woohm402/why-TBD
-[3] https://softwareengineering.stackexchange.com/questions/450717/how-to-use-trunk-based-development-when-using-scrum
-[4] https://www.toptal.com/software/trunk-based-development-git-flow
-[5] https://helloinyong.tistory.com/335
-[6] https://launchdarkly.com/blog/git-branching-strategies-vs-trunk-based-development/
-[7] https://velog.io/@xmun74/Trunk-based-Development
+**TBD 전략은 빠른 개발 주기, 자동화된 품질 보증, 단순한 브랜치 관리가 필요한 SaaS, 웹서비스, DevOps 환경에 특히 적합합니다.** 반면, 정기적 대규모 릴리즈나 여러 버전 동시 지원이 필요한 프로젝트에는 Git-Flow 등 다른 전략이 더 나을 수 있습니다[1][6].
+[1] https://velog.io/@ahn-sujin/효율적인-git-branch-전략을-향해-TBD에서-Git-Flow로
+[2] https://helloinyong.tistory.com/335
+[3] https://uhgenie7.github.io/docs/dev/git/trunk-based-development
+[4] https://weaklion1.tistory.com/35
+[5] https://www.anyflow.net/sw-engineer/trunk-based-development
+[6] https://www.anyflow.net/sw-engineer/gitops-git-practices
+[7] https://velog.io/@woohm402/why-TBD
 [8] https://ltr2006.tistory.com/48
-[9] https://www.anyflow.net/sw-engineer/gitops-git-practices
-[10] https://softwareengineering.stackexchange.com/questions/442910/what-is-the-difference-between-trunk-based-development-and-gitflow
-[11] https://softengbook.org/articles/branching-strategies
-[12] https://medium.com/@mridulpandey/git-branching-strategy-33d1565ddee5
-[13] https://pgo-dev.medium.com/git-flow-vs-tbd-%EC%96%B4%EB%96%A4-%EB%B2%84%EC%A0%84%EA%B4%80%EB%A6%AC-%EC%A0%84%EB%9E%B5%EC%9D%B4-%EC%9C%A0%EB%A6%AC%ED%95%A0%EA%B9%8C-cd238d3f2ff4
-[14] https://uhgenie7.github.io/docs/dev/git/trunk-based-development
-[15] https://www.anyflow.net/sw-engineer/trunk-based-development
-[16] https://pypy.dev/dev/git-flow-%EC%9E%98%EB%AA%BB-%EC%93%B0%EA%B3%A0-%EC%9E%88%EC%97%88%EB%8B%A4-azure-devops-%EC%97%90%EC%84%9C-%EA%B6%8C%EC%9E%A5%ED%95%98%EB%8A%94-%EB%B8%8C%EB%9E%9C%EC%B9%98-%EC%A0%84%EB%9E%B5/
-[17] https://www.atlassian.com/continuous-delivery/continuous-integration/trunk-based-development
-[18] https://www.reddit.com/r/devops/comments/1d7cpz8/tbd_where_do_you_draw_the_line_between_a_long/
-[19] https://www.getunleash.io/blog/how-to-implement-trunk-based-development-a-practical-guide
-[20] https://trunkbaseddevelopment.com/
+[9] https://disco-biscuit.tistory.com/207
